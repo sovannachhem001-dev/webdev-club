@@ -1,0 +1,229 @@
+
+/* =========================
+   GALLERY PAGE
+========================= */
+
+.gallery-page {
+  min-height: 500px;
+  padding: 50px 5%;
+  background: #f8fafc;
+}
+
+.gallery-heading {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.gallery-heading h1 {
+  font-size: 36px;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.gallery-heading p {
+  color: #64748b;
+  font-size: 16px;
+}
+
+/* =========================
+   GALLERY GRID
+========================= */
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 25px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.gallery-item {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #e5e7eb;
+  cursor: pointer;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.06);
+}
+
+/* =========================
+   LOADING AND ERROR
+========================= */
+
+.gallery-error {
+  text-align: center;
+  color: #dc2626;
+  margin: 20px;
+}
+
+/* =========================
+   FULL SCREEN IMAGE POPUP
+========================= */
+
+.gallery-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.96);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 60px 80px;
+}
+
+/* Original image size and proportions */
+.gallery-modal img {
+  display: block;
+  width: auto;
+  height: auto;
+
+  max-width: 100%;
+  max-height: 90vh;
+
+  object-fit: contain;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* =========================
+   CLOSE BUTTON
+========================= */
+
+.gallery-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 30px;
+
+  background: transparent;
+  border: none;
+
+  color: white;
+  font-size: 45px;
+  cursor: pointer;
+
+  z-index: 2;
+}
+
+.gallery-modal-close:hover {
+  color: #38bdf8;
+}
+
+/* =========================
+   PREVIOUS AND NEXT BUTTONS
+========================= */
+
+.gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 50px;
+  height: 50px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+
+  font-size: 24px;
+  cursor: pointer;
+
+  z-index: 2;
+  transition: background 0.3s ease;
+}
+
+.gallery-arrow:hover {
+  background: #2563eb;
+}
+
+.gallery-previous {
+  left: 20px;
+}
+
+.gallery-next {
+  right: 20px;
+}
+
+/* =========================
+   IMAGE COUNTER
+========================= */
+
+.gallery-image-counter {
+  position: absolute;
+  bottom: 15px;
+
+  color: white;
+  font-size: 15px;
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 900px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+  .gallery-page {
+    padding: 35px 5%;
+  }
+
+  .gallery-heading h1 {
+    font-size: 28px;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .gallery-modal {
+    padding: 50px 45px;
+  }
+
+  .gallery-modal img {
+    max-width: 100%;
+    max-height: 85vh;
+  }
+
+  .gallery-previous {
+    left: 5px;
+  }
+
+  .gallery-next {
+    right: 5px;
+  }
+
+  .gallery-arrow {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
+
+  .gallery-modal-close {
+    right: 15px;
+    top: 5px;
+  }
+}
