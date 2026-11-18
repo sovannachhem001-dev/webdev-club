@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { supabase } from "../services/supabase";
+import { SUPABASE_CONFIG_ERROR, supabase } from "../services/supabase";
 import "./Members.css";
 
 function Members() {
@@ -9,25 +9,33 @@ function Members() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchMembers();
-  }, []);
+    let active = true;
 
-  async function fetchMembers() {
-    setError("");
-    const { data, error } = await supabase
+    const request = supabase
+      ? supabase
       .from("members")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      : Promise.reject(new Error(SUPABASE_CONFIG_ERROR));
 
-    if (error) {
-      console.error("Error loading members:", error.message);
-      setError(error.message);
-    } else {
-      setMembers(data);
-    }
+    request
+      .then(({ data, error }) => {
+        if (error) throw error;
+        if (active) setMembers(data || []);
+      })
+      .catch((error) => {
+        if (!active) return;
+        console.error("Error loading members:", error.message);
+        setError(error.message);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
-    setLoading(false);
-  }
+    return () => {
+      active = false;
+    };
+  }, []);
 
   if (loading) {
     return (

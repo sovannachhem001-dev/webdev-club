@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { supabase } from "../services/supabase";
+import { SUPABASE_CONFIG_ERROR, supabase } from "../services/supabase";
 import "./Contact.css";
 
 function Contact() {
@@ -22,25 +22,33 @@ function Contact() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    if (!supabase) {
+      setStatus(`Error: ${SUPABASE_CONFIG_ERROR}`);
+      return;
+    }
+
     setLoading(true);
     setStatus("");
 
-    const { error } = await supabase
-      .from("contact_messages")
-      .insert([formData]);
+    try {
+      const { error } = await supabase
+        .from("contact_messages")
+        .insert([formData]);
 
-    if (error) {
-      setStatus("Error: " + error.message);
-    } else {
+      if (error) throw error;
+
       setStatus("Message sent successfully!");
       setFormData({
         name: "",
         email: "",
         message: "",
       });
+    } catch (error) {
+      setStatus(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (

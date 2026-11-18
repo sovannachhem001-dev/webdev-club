@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../services/supabase";
+import { SUPABASE_CONFIG_ERROR, supabase } from "../services/supabase";
 import "./Login.css";
 
 function Login() {
@@ -14,6 +14,12 @@ function Login() {
 
   async function handleLogin(e) {
     e.preventDefault();
+
+    if (!supabase) {
+      setError(SUPABASE_CONFIG_ERROR);
+      return;
+    }
+
     setLoading(true);
     setError("");
 

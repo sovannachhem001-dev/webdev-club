@@ -1,16 +1,21 @@
-# React + Vite
+# WebDev Club
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+WebDev Club is a React and Vite website backed by Supabase.
 
-Currently, two official plugins are available:
+## Local development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Copy `.env.example` to `.env`.
+2. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` using your Supabase project API settings.
+3. Install dependencies with `npm install`.
+4. Start the development server with `npm run dev`.
 
-## React Compiler
+## Deploying on Vercel
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+In the Vercel project, open **Settings → Environment Variables** and add:
 
-## Expanding the ESLint configuration
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Use the values from the Supabase project API settings. Apply them to Production (and Preview/Development if needed), then redeploy the latest commit. Vite embeds these variables during the build, so changing them requires a new deployment.
+
+`vercel.json` includes a single-page-app rewrite so direct navigation and refreshes on routes such as `/admin/gallery` resolve to the React app.

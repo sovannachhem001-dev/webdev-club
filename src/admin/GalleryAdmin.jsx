@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../services/supabase";
+import { SUPABASE_CONFIG_ERROR, supabase } from "../services/supabase";
 import AdminSidebar from "./AdminSidebar";
 import "./GalleryAdmin.css";
 
@@ -26,6 +26,12 @@ function GalleryAdmin() {
 
   // Check admin access
   async function checkAdmin() {
+    if (!supabase) {
+      setError(SUPABASE_CONFIG_ERROR);
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase.auth.getSession();
 

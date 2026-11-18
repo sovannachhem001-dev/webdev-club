@@ -1,12 +1,17 @@
 
 import { NavLink, useNavigate } from "react-router-dom";
-import { supabase } from "../services/supabase";
+import { SUPABASE_CONFIG_ERROR, supabase } from "../services/supabase";
 import "./AdminSidebar.css";
 
 function AdminSidebar() {
   const navigate = useNavigate();
 
   async function handleLogout() {
+    if (!supabase) {
+      alert(SUPABASE_CONFIG_ERROR);
+      return;
+    }
+
     const { error } = await supabase.auth.signOut();
 
     if (error) {

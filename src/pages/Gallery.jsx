@@ -1,6 +1,6 @@
 
-import { useEffect, useState } from "react";
-import { supabase } from "../services/supabase";
+import { useCallback, useEffect, useState } from "react";
+import { SUPABASE_CONFIG_ERROR, supabase } from "../services/supabase";
 import "./Gallery.css";
 
 function Gallery() {
@@ -10,56 +10,59 @@ function Gallery() {
   const [selectedIndex, setSelectedIndex] = useState(null);
 
   useEffect(() => {
-    fetchGalleryImages();
+    let active = true;
+
+    const request = supabase
+      ? supabase.storage.from("gallery").list()
+      : Promise.reject(new Error(SUPABASE_CONFIG_ERROR));
+
+    request
+      .then(({ data, error }) => {
+        if (error) throw error;
+
+        const imageFiles = (data || []).filter(
+          (item) =>
+            item.name &&
+            item.name !== ".emptyFolderPlaceholder" &&
+            /\.(jpg|jpeg|png|gif|webp|avif)$/i.test(item.name)
+        );
+
+        const galleryImages = imageFiles.map((item) => {
+          const { data: urlData } = supabase.storage
+            .from("gallery")
+            .getPublicUrl(item.name);
+
+          return {
+            name: item.name,
+            url: urlData.publicUrl,
+          };
+        });
+
+        if (active) setImages(galleryImages);
+      })
+      .catch((error) => {
+        if (active) setError(error.message);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
-  async function fetchGalleryImages() {
-    setLoading(true);
-    setError("");
-
-    const { data, error } = await supabase.storage
-      .from("gallery")
-      .list();
-
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-      return;
-    }
-
-    const imageFiles = (data || []).filter(
-      (item) =>
-        item.name &&
-        item.name !== ".emptyFolderPlaceholder" &&
-        /\.(jpg|jpeg|png|gif|webp|avif)$/i.test(item.name)
-    );
-
-    const galleryImages = imageFiles.map((item) => {
-      const { data } = supabase.storage
-        .from("gallery")
-        .getPublicUrl(item.name);
-
-      return {
-        name: item.name,
-        url: data.publicUrl,
-      };
-    });
-
-    setImages(galleryImages);
-    setLoading(false);
-  }
-
-  function showPrevious() {
+  const showPrevious = useCallback(() => {
     setSelectedIndex((current) =>
       current === 0 ? images.length - 1 : current - 1
     );
-  }
+  }, [images.length]);
 
-  function showNext() {
+  const showNext = useCallback(() => {
     setSelectedIndex((current) =>
       current === images.length - 1 ? 0 : current + 1
     );
-  }
+  }, [images.length]);
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -75,7 +78,7 @@ function Gallery() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedIndex, images.length]);
+  }, [selectedIndex, showNext, showPrevious]);
 
   return (
     <section className="gallery-page">
