@@ -296,7 +296,18 @@ function Admin() {
           </div>
         </div>
 
-        {error && <p className="admin-error">{error}</p>}
+        {error && (
+          <div className="admin-error" role="alert">
+            <strong>Dashboard data is unavailable.</strong>
+            <p>{error}</p>
+            {!supabase && (
+              <p>
+                After adding both Vercel variables, redeploy and sign in again
+                to load live dashboard data.
+              </p>
+            )}
+          </div>
+        )}
 
         <section className="admin-welcome-banner">
           <div className="admin-welcome-copy">
@@ -315,22 +326,22 @@ function Admin() {
         <div className="admin-stats">
           <div className="admin-card">
             <span className="admin-stat-icon admin-stat-blue" aria-hidden="true">👥</span>
-            <div><p>Total Members</p><h2>{members.length}</h2></div>
+            <div><p>Total Members</p><h2>{supabase ? members.length : "—"}</h2></div>
           </div>
 
           <div className="admin-card">
             <span className="admin-stat-icon admin-stat-green" aria-hidden="true">✉</span>
-            <div><p>Contact Messages</p><h2>{messages.length}</h2></div>
+            <div><p>Contact Messages</p><h2>{supabase ? messages.length : "—"}</h2></div>
           </div>
 
           <div className="admin-card">
             <span className="admin-stat-icon admin-stat-purple" aria-hidden="true">&lt;/&gt;</span>
-            <div><p>Gallery Images</p><h2>{galleryCount}</h2></div>
+            <div><p>Gallery Images</p><h2>{supabase ? galleryCount : "—"}</h2></div>
           </div>
 
           <div className="admin-card">
             <span className="admin-stat-icon admin-stat-orange" aria-hidden="true">◆</span>
-            <div><p>Club Roles</p><h2>{availableRoles.length - 1}</h2></div>
+            <div><p>Club Roles</p><h2>{supabase ? availableRoles.length - 1 : "—"}</h2></div>
           </div>
         </div>
 
