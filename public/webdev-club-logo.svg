@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">WebDev Club monogram</title>
+  <desc id="desc">A white W and blue D monogram with cyan code brackets and orbit swooshes.</desc>
+  <defs>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#08D9F5"/>
+      <stop offset="1" stop-color="#075BFF"/>
+    </linearGradient>
+    <linearGradient id="white" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DCEBFF"/>
+    </linearGradient>
+  </defs>
+  <!-- Orbit swooshes -->
+  <path d="M103 346 C133 235 245 116 365 112 C414 110 443 133 453 161 C421 132 387 132 350 145 C249 180 168 265 140 365 Z" fill="url(#blue)"/>
+  <path d="M78 350 C145 422 281 415 397 334 C438 305 460 267 456 232 C481 290 448 352 390 389 C276 463 129 448 78 384 Z" fill="url(#blue)"/>
+  <!-- W monogram -->
+  <path d="M91 183 H153 L190 294 L230 207 H271 L310 294 L345 183 H407 L339 365 H287 L250 281 L211 365 H159 Z" fill="url(#white)"/>
+  <!-- D monogram, integrated at right -->
+  <path d="M305 184 H354 C414 184 447 219 447 274 C447 329 414 365 354 365 H305 L326 315 H352 C380 315 394 301 394 274 C394 247 380 233 352 233 H326 Z" fill="url(#blue)"/>
+  <!-- Code mark -->
+  <path d="M337 251 L315 274 L337 297" fill="none" stroke="#00E5F5" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M407 251 L429 274 L407 297" fill="none" stroke="#00E5F5" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M389 244 L357 304" fill="none" stroke="#00E5F5" stroke-width="11" stroke-linecap="round"/>
+</svg>

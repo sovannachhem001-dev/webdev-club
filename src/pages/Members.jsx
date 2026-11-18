@@ -6,12 +6,14 @@ import "./Members.css";
 function Members() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchMembers();
   }, []);
 
   async function fetchMembers() {
+    setError("");
     const { data, error } = await supabase
       .from("members")
       .select("*")
@@ -19,6 +21,7 @@ function Members() {
 
     if (error) {
       console.error("Error loading members:", error.message);
+      setError(error.message);
     } else {
       setMembers(data);
     }
@@ -27,7 +30,14 @@ function Members() {
   }
 
   if (loading) {
-    return <p>Loading members...</p>;
+    return (
+      <section className="members-page">
+        <div className="members-state" role="status">
+          <span className="members-spinner" aria-hidden="true"></span>
+          <p>Loading members...</p>
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -36,6 +46,12 @@ function Members() {
       <p className="members-intro">
         Meet the people behind WebDev Club.
       </p>
+
+      {error && (
+        <p className="members-error" role="alert">
+          Unable to load members: {error}
+        </p>
+      )}
 
       <div className="members-container">
         {members.length === 0 ? (

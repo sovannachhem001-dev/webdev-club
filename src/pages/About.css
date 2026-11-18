@@ -1,13 +1,16 @@
 
 .about-hero {
-  background: #0f172a;
+  background:
+    radial-gradient(circle at 75% 20%, rgba(56, 189, 248, 0.16), transparent 20rem),
+    linear-gradient(135deg, #08111f, #172554);
   color: white;
   text-align: center;
-  padding: 100px 8%;
+  padding: 110px 8%;
 }
 
 .about-hero h1 {
-  font-size: 48px;
+  font-size: clamp(40px, 6vw, 56px);
+  letter-spacing: -2px;
   margin-bottom: 20px;
 }
 
@@ -21,8 +24,9 @@
 }
 
 .about-intro {
-  padding: 80px 12%;
+  padding: 88px 12%;
   text-align: center;
+  background: white;
 }
 
 .about-intro h2 {
@@ -37,8 +41,57 @@
   line-height: 1.9;
 }
 
+.learning-section {
+  padding: 78px 8%;
+  background: #fff;
+  text-align: center;
+  border-top: 1px solid #e2e8f0;
+}
+
+.learning-section h2 {
+  margin-bottom: 32px;
+  font-size: clamp(32px, 4vw, 42px);
+  letter-spacing: -1px;
+}
+
+.learning-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.learning-grid article {
+  padding: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.learning-grid article > span {
+  color: #0ea5e9;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.learning-grid h3 {
+  margin: 12px 0 8px;
+}
+
+.learning-grid p {
+  color: #64748b;
+  line-height: 1.7;
+}
+
 .about-cards {
-  padding: 30px 8% 80px;
+  background: #f8fafc;
+}
+
+.about-cards {
+  padding: 20px 8% 88px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 25px;
@@ -48,7 +101,15 @@
   padding: 35px 25px;
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+  transition: 0.25s ease;
+}
+
+.about-card:hover {
+  transform: translateY(-6px);
+  border-color: #bae6fd;
+  box-shadow: 0 20px 40px rgba(14, 165, 233, 0.11);
 }
 
 .about-card h3 {
@@ -67,6 +128,10 @@
   }
 
   .about-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-grid {
     grid-template-columns: 1fr;
   }
 }

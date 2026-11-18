@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import "./Navbar.css";
 
 function Navbar() {
@@ -12,11 +12,11 @@ function Navbar() {
       </Link>
 
       <nav className="nav-links">
-        <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
-        <Link to="/members">Members</Link>
-        <Link to="/gallery">Gallery</Link>
-        <Link to="/contact">Contact</Link>
+        <NavLink to="/" end>Home</NavLink>
+        <NavLink to="/about">About</NavLink>
+        <NavLink to="/members">Members</NavLink>
+        <NavLink to="/gallery">Gallery</NavLink>
+        <NavLink to="/contact">Contact</NavLink>
       </nav>
 
       <Link to="/contact" className="join-btn">

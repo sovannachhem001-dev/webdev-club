@@ -8,6 +8,7 @@ import "./Admin.css";
 function Admin() {
   const [members, setMembers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [galleryCount, setGalleryCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -75,6 +76,11 @@ function Admin() {
           .order("created_at", { ascending: false }),
       ]);
 
+      const { data: galleryFiles, error: galleryError } =
+        await supabase.storage.from("gallery").list("", { limit: 100 });
+
+      if (galleryError) throw galleryError;
+
       if (memberResult.error) throw memberResult.error;
       if (messageResult.error) throw messageResult.error;
 
@@ -82,6 +88,11 @@ function Admin() {
 
       setMembers(updatedMembers);
       setMessages(messageResult.data || []);
+      setGalleryCount(
+        (galleryFiles || []).filter(
+          (item) => item.name && item.name !== ".emptyFolderPlaceholder"
+        ).length
+      );
 
       const filteredCount = updatedMembers.filter((member) => {
         const search = searchTerm.trim().toLowerCase();
@@ -240,7 +251,12 @@ function Admin() {
   }
 
   if (loading) {
-    return <p>Checking admin access...</p>;
+    return (
+      <div className="admin-loading">
+        <span className="admin-loading-spinner" aria-hidden="true"></span>
+        <p>Loading dashboard...</p>
+      </div>
+    );
   }
 
   return (
@@ -251,32 +267,133 @@ function Admin() {
         <div className="admin-header">
           <div>
             <h1>Admin Dashboard</h1>
-            <p>Welcome to WebDev Club management.</p>
+            <p>Welcome to WebDev Club! Manage your community from here.</p>
           </div>
 
           <div className="admin-header-actions">
             <button
               onClick={() => navigate("/admin/messages")}
-              className="manage-messages-btn"
+              className="admin-notification"
+              aria-label="View messages"
             >
-              Manage Messages
+              <span aria-hidden="true">🔔</span>
+              {messages.length > 0 && <b>{messages.length}</b>}
+            </button>
+            <button
+              onClick={() => navigate("/admin/members")}
+              className="admin-profile"
+            >
+              <span className="admin-profile-avatar">A</span>
+              <span><strong>Admin</strong><small>WebDev Club</small></span>
+              <span aria-hidden="true">⌄</span>
             </button>
           </div>
         </div>
 
         {error && <p className="admin-error">{error}</p>}
 
+        <section className="admin-welcome-banner">
+          <div className="admin-welcome-copy">
+            <h2>WebDev Club</h2>
+            <p>Learn · Build · Share · Grow</p>
+          </div>
+          <div className="admin-welcome-message">
+            <span>A community for students</span>
+            <strong>who love web development, design, and technology.</strong>
+          </div>
+          <div className="admin-welcome-art" aria-hidden="true">
+            <span>&lt;/&gt;</span>
+          </div>
+        </section>
+
         <div className="admin-stats">
           <div className="admin-card">
-            <h2>{members.length}</h2>
-            <p>Total Members</p>
+            <span className="admin-stat-icon admin-stat-blue" aria-hidden="true">👥</span>
+            <div><p>Total Members</p><h2>{members.length}</h2></div>
           </div>
 
           <div className="admin-card">
-            <h2>{messages.length}</h2>
-            <p>Contact Messages</p>
+            <span className="admin-stat-icon admin-stat-green" aria-hidden="true">✉</span>
+            <div><p>Contact Messages</p><h2>{messages.length}</h2></div>
+          </div>
+
+          <div className="admin-card">
+            <span className="admin-stat-icon admin-stat-purple" aria-hidden="true">&lt;/&gt;</span>
+            <div><p>Gallery Images</p><h2>{galleryCount}</h2></div>
+          </div>
+
+          <div className="admin-card">
+            <span className="admin-stat-icon admin-stat-orange" aria-hidden="true">◆</span>
+            <div><p>Club Roles</p><h2>{availableRoles.length - 1}</h2></div>
           </div>
         </div>
+
+        <div className="admin-analytics">
+          <section className="admin-panel admin-growth-panel">
+            <div className="admin-panel-heading">
+              <h2>Member Growth</h2>
+              <div className="admin-period-tabs" aria-label="Chart period">
+                <button className="active" type="button">Monthly</button>
+                <button type="button">Weekly</button>
+                <button type="button">Yearly</button>
+              </div>
+            </div>
+            <div className="admin-growth-chart" aria-label="Recent member growth chart">
+              {[22, 38, 46, 58, 72, 86].map((height, index) => (
+                <div className="admin-chart-column" key={index}>
+                  <div
+                    className="admin-chart-bar"
+                    style={{ height: `${height}%` }}
+                    title={`${height} members`}
+                  ></div>
+                  <span>{["Jun", "Jul", "Aug", "Sep", "Oct", "Nov"][index]}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="admin-panel admin-role-panel">
+            <div className="admin-panel-heading">
+              <h2>Members by Role</h2>
+            </div>
+            <div className="admin-role-content">
+              <div className="admin-role-donut">
+                <div><strong>{members.length}</strong><span>Members</span></div>
+              </div>
+              <div className="admin-role-list">
+                {availableRoles.slice(1, 4).length > 0
+                  ? availableRoles.slice(1, 4).map((role, index) => {
+                      const count = members.filter((member) => member.role === role).length;
+                      return (
+                        <div key={role}>
+                          <span className={`admin-role-dot role-${index}`}></span>
+                          <p>{role}</p>
+                          <strong>{count}</strong>
+                        </div>
+                      );
+                    })
+                  : <p>No roles added yet</p>}
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section className="admin-panel admin-quick-actions">
+          <div className="admin-panel-heading">
+            <h2>Quick Actions</h2>
+          </div>
+          <div className="admin-actions-grid">
+            <button type="button" onClick={() => document.querySelector(".member-form")?.scrollIntoView({ behavior: "smooth" })}>
+              <span className="admin-action-purple">＋</span>Add Member
+            </button>
+            <button type="button" onClick={() => navigate("/admin/messages")}>
+              <span className="admin-action-green">✉</span>View Messages
+            </button>
+            <button type="button" onClick={() => navigate("/admin/gallery")}>
+              <span className="admin-action-orange">▧</span>Upload Gallery
+            </button>
+          </div>
+        </section>
 
         <h2>
           {editingId !== null ? "Edit Member" : "Add New Member"}

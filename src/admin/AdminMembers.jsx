@@ -21,7 +21,10 @@ function AdminMembers() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showMemberForm, setShowMemberForm] = useState(false);
+  const [viewMode, setViewMode] = useState("list");
 
   const membersPerPage = 5;
 
@@ -84,6 +87,7 @@ function AdminMembers() {
     setEmail("");
     setBio("");
     setEditingId(null);
+    setShowMemberForm(false);
   }
 
   async function handleSubmit(e) {
@@ -130,6 +134,7 @@ function AdminMembers() {
     setRole(member.role);
     setEmail(member.email || "");
     setBio(member.bio || "");
+    setShowMemberForm(true);
 
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -174,7 +179,11 @@ function AdminMembers() {
     const matchesRole =
       roleFilter === "All" || member.role === roleFilter;
 
-    return matchesSearch && matchesRole;
+    const memberStatus = member.status || "Active";
+    const matchesStatus =
+      statusFilter === "All" || memberStatus === statusFilter;
+
+    return matchesSearch && matchesRole && matchesStatus;
   });
 
   const totalPages = Math.ceil(
@@ -204,7 +213,12 @@ function AdminMembers() {
   }
 
   if (loading) {
-    return <p>Checking admin access...</p>;
+    return (
+      <div className="members-admin-loading">
+        <span aria-hidden="true"></span>
+        <p>Loading members...</p>
+      </div>
+    );
   }
 
   return (
@@ -214,90 +228,79 @@ function AdminMembers() {
       <main className="admin-members-page">
         <header className="members-header">
           <div>
-            <h1>Manage Members</h1>
-            <p>Manage all WebDev Club members here.</p>
+            <h1>Members</h1>
+            <p>Manage club members (view, add, edit, delete)</p>
           </div>
 
-          <div className="members-total">
-            <span>Total Members</span>
-            <strong>{members.length}</strong>
+          <div className="members-header-tools">
+            <label className="members-top-search">
+              <span aria-hidden="true">⌕</span>
+              <input
+                type="search"
+                placeholder="Search member..."
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+              />
+            </label>
+            <button
+              type="button"
+              className="members-bell"
+              onClick={() => navigate("/admin/messages")}
+              aria-label="Open messages"
+            >
+              ♢
+            </button>
+            <button type="button" className="members-profile">
+              <span>A</span>
+              <strong>Admin</strong>
+              <b>⌄</b>
+            </button>
           </div>
         </header>
 
         {error && <p className="members-error">{error}</p>}
 
-        <section className="members-form-section">
-          <h2>
-            {editingId !== null ? "Edit Member" : "Add New Member"}
-          </h2>
-
-          <form className="members-form" onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Member name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-
-            <input
-              type="text"
-              placeholder="Member role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              required
-            />
-
-            <input
-              type="email"
-              placeholder="Member email (optional)"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-
-            <textarea
-              placeholder="Member bio"
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-            />
-
-            <div className="members-form-actions">
-              <button type="submit" disabled={saving}>
-                {saving
-                  ? "Saving..."
-                  : editingId !== null
-                    ? "Update Member"
-                    : "Add Member"}
-              </button>
-
-              {editingId !== null && (
-                <button
-                  type="button"
-                  className="cancel-member-btn"
-                  onClick={clearForm}
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
-          </form>
+        <section className="members-stat-grid">
+          <article className="members-stat-card">
+            <span className="members-stat-icon purple">♟</span>
+            <div><p>Total Members</p><strong>{members.length}</strong></div>
+          </article>
+          <article className="members-stat-card">
+            <span className="members-stat-icon blue">▱</span>
+            <div><p>Students</p><strong>{members.filter((member) => /student/i.test(member.role || "")).length}</strong></div>
+          </article>
+          <article className="members-stat-card">
+            <span className="members-stat-icon orange">★</span>
+            <div><p>Core Team</p><strong>{members.filter((member) => /core/i.test(member.role || "")).length}</strong></div>
+          </article>
+          <article className="members-stat-card">
+            <span className="members-stat-icon violet">♟</span>
+            <div><p>Advisors</p><strong>{members.filter((member) => /advisor/i.test(member.role || "")).length}</strong></div>
+          </article>
+          <button
+            type="button"
+            className="members-add-button"
+            onClick={() => {
+              clearForm();
+              setShowMemberForm(true);
+            }}
+          >
+            ＋ Add Member
+          </button>
         </section>
 
         <section className="members-list-section">
           <div className="members-list-header">
-            <h2>All Members</h2>
+            <div className="members-list-title">
+              <span>♟</span>
+              <h2>Member List</h2>
+            </div>
 
             <div className="members-filters">
-              <input
-                type="text"
-                placeholder="Search members..."
-                value={searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
-              />
-
               <select
                 value={roleFilter}
                 onChange={(e) => handleFilter(e.target.value)}
+                aria-label="Filter by role"
               >
                 {availableRoles.map((item) => (
                   <option key={item} value={item}>
@@ -305,41 +308,94 @@ function AdminMembers() {
                   </option>
                 ))}
               </select>
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                aria-label="Filter by status"
+              >
+                <option value="All">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Pending">Pending</option>
+              </select>
+              <div className="members-view-toggle">
+                <button
+                  type="button"
+                  className={viewMode === "list" ? "active" : ""}
+                  onClick={() => setViewMode("list")}
+                  aria-label="List view"
+                >≡</button>
+                <button
+                  type="button"
+                  className={viewMode === "grid" ? "active" : ""}
+                  onClick={() => setViewMode("grid")}
+                  aria-label="Grid view"
+                >▦</button>
+              </div>
             </div>
           </div>
 
-          <div className="members-list">
+          <div className={`members-table ${viewMode === "grid" ? "members-table-grid" : ""}`}>
+            {viewMode === "list" && (
+              <div className="members-table-head">
+                <span>#</span>
+                <span>Photo</span>
+                <span>Name</span>
+                <span>Role</span>
+                <span>Email</span>
+                <span>Joined Date</span>
+                <span>Status</span>
+                <span>Actions</span>
+              </div>
+            )}
+
             {currentMembers.length === 0 ? (
-              <p className="members-empty">
-                No matching members found.
-              </p>
+              <p className="members-empty">No matching members found.</p>
             ) : (
-              currentMembers.map((member) => (
-                <article className="member-item" key={member.id}>
-                  <div className="member-info">
-                    <h3>{member.name}</h3>
-                    <span className="member-role">{member.role}</span>
-                    <p>{member.email || "No email provided"}</p>
-                    <p>{member.bio || "No bio provided"}</p>
-                  </div>
+              currentMembers.map((member, index) => {
+                const status = member.status || "Active";
+                const joinedDate = member.created_at
+                  ? new Date(member.created_at).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                    })
+                  : "Not available";
 
-                  <div className="member-item-actions">
-                    <button
-                      className="member-edit-btn"
-                      onClick={() => handleEdit(member)}
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      className="member-delete-btn"
-                      onClick={() => handleDelete(member.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </article>
-              ))
+                return (
+                  <article className="member-item" key={member.id}>
+                    {viewMode === "list" && (
+                      <span className="member-index">{startIndex + index + 1}</span>
+                    )}
+                    <span className="member-avatar">
+                      {(member.name || "?").charAt(0).toUpperCase()}
+                    </span>
+                    <strong className="member-name">{member.name}</strong>
+                    <span className={`member-role role-${(member.role || "").toLowerCase().replace(/\s+/g, "-")}`}>
+                      {member.role}
+                    </span>
+                    <span className="member-email">{member.email || "No email"}</span>
+                    <span className="member-date">{joinedDate}</span>
+                    <span className={`member-status ${status === "Pending" ? "pending" : "active"}`}>
+                      <i></i>{status}
+                    </span>
+                    <div className="member-item-actions">
+                      <button
+                        className="member-edit-btn"
+                        onClick={() => handleEdit(member)}
+                        aria-label={`Edit ${member.name}`}
+                      >✎</button>
+                      <button
+                        className="member-delete-btn"
+                        onClick={() => handleDelete(member.id)}
+                        aria-label={`Delete ${member.name}`}
+                      >🗑</button>
+                    </div>
+                  </article>
+                );
+              })
             )}
           </div>
 
@@ -388,6 +444,94 @@ function AdminMembers() {
             </p>
           )}
         </section>
+
+        {showMemberForm && (
+          <div
+            className="members-modal-overlay"
+            role="presentation"
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget) clearForm();
+            }}
+          >
+            <section
+              className="members-form-section members-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="member-form-title"
+            >
+              <div className="members-modal-heading">
+                <div>
+                  <h2 id="member-form-title">
+                    {editingId !== null ? "Edit Member" : "Add New Member"}
+                  </h2>
+                  <p>Manage the member profile shown on the public website.</p>
+                </div>
+                <button type="button" onClick={clearForm} aria-label="Close member form">×</button>
+              </div>
+
+              <form className="members-form" onSubmit={handleSubmit}>
+                <div className="members-form-grid">
+                  <label>
+                    <span>Name</span>
+                    <input
+                      type="text"
+                      placeholder="Member name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                  </label>
+                  <label>
+                    <span>Role</span>
+                    <input
+                      type="text"
+                      placeholder="Student, Core Team, Advisor..."
+                      value={role}
+                      onChange={(e) => setRole(e.target.value)}
+                      required
+                    />
+                  </label>
+                </div>
+
+                <label>
+                  <span>Email</span>
+                  <input
+                    type="email"
+                    placeholder="Member email (optional)"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </label>
+
+                <label>
+                  <span>Bio</span>
+                  <textarea
+                    placeholder="Short member bio"
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                  />
+                </label>
+
+                <div className="members-form-actions">
+                  <button type="submit" disabled={saving}>
+                    {saving
+                      ? "Saving..."
+                      : editingId !== null
+                        ? "Update Member"
+                        : "Add Member"}
+                  </button>
+                  <button
+                    type="button"
+                    className="cancel-member-btn"
+                    onClick={clearForm}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        )}
       </main>
     </div>
   );

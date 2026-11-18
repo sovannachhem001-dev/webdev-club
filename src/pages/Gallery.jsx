@@ -85,22 +85,37 @@ function Gallery() {
       </div>
 
       {loading ? (
-        <p>Loading gallery...</p>
+        <div className="gallery-state" role="status">
+          <span className="gallery-spinner" aria-hidden="true"></span>
+          <p>Loading gallery...</p>
+        </div>
       ) : error ? (
-        <p className="gallery-error">{error}</p>
+        <div className="gallery-state gallery-error" role="alert">
+          <p>{error}</p>
+        </div>
       ) : images.length === 0 ? (
-        <p>No photos available yet.</p>
+        <div className="gallery-state">
+          <p>No photos available yet.</p>
+        </div>
       ) : (
         <div className="gallery-grid">
           {images.map((image, index) => (
-            <div className="gallery-item" key={image.name}>
+            <button
+              type="button"
+              className="gallery-item"
+              key={image.name}
+              onClick={() => setSelectedIndex(index)}
+              aria-label={`Open image ${index + 1}`}
+            >
               <img
                 src={image.url}
-                alt="WebDev Club activity"
+                alt={`WebDev Club activity ${index + 1}`}
                 loading="lazy"
-                onClick={() => setSelectedIndex(index)}
               />
-            </div>
+              <span className="gallery-item-overlay" aria-hidden="true">
+                View photo
+              </span>
+            </button>
           ))}
         </div>
       )}

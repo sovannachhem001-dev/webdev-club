@@ -20,8 +20,11 @@ function AdminSidebar() {
   return (
     <aside className="admin-sidebar">
       <div className="sidebar-logo">
-        <h2>WebDev Club</h2>
-        <p>Admin Panel</p>
+        <span className="sidebar-logo-mark" aria-hidden="true">&lt;/&gt;</span>
+        <div>
+          <h2>WebDev Club</h2>
+          <p>IT &amp; Web Development</p>
+        </div>
       </div>
 
       <nav className="sidebar-nav">

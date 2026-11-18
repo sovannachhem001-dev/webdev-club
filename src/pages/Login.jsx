@@ -48,7 +48,7 @@ function Login() {
     <section className="login-page">
       <form className="login-form" onSubmit={handleLogin}>
         <h1>Admin Login</h1>
-        <p>Sign in to manage WebDev Club.</p>
+        <p>Secure access to manage members, gallery photos, and club messages.</p>
 
         <label>Email</label>
         <input

@@ -45,12 +45,34 @@ function Contact() {
 
   return (
     <section className="contact-page">
-      <h1>Contact Us</h1>
-      <p className="contact-intro">
-        Have a question? We'd love to hear from you.
-      </p>
+      <div className="contact-heading">
+        <span className="section-eyebrow">Get in touch</span>
+        <h1>Contact Us</h1>
+        <p className="contact-intro">
+          Have a question or want to join? We'd love to hear from you.
+        </p>
+      </div>
 
-      <form className="contact-form" onSubmit={handleSubmit}>
+      <div className="contact-layout">
+        <aside className="contact-information">
+          <h2>Let's build together</h2>
+          <p>Share your idea, ask about membership, or connect with the club team.</p>
+
+          <div className="contact-detail">
+            <span>Response time</span>
+            <strong>Usually within 1–2 days</strong>
+          </div>
+          <div className="contact-detail">
+            <span>Membership</span>
+            <strong>Open to interested students</strong>
+          </div>
+          <div className="contact-detail">
+            <span>Community</span>
+            <strong>Learning, projects, and teamwork</strong>
+          </div>
+        </aside>
+
+        <form className="contact-form" onSubmit={handleSubmit}>
         <label>Name</label>
         <input
           type="text"
@@ -85,8 +107,20 @@ function Contact() {
           {loading ? "Sending..." : "Send Message"}
         </button>
 
-        {status && <p>{status}</p>}
-      </form>
+        {status && (
+          <p
+            className={
+              status.startsWith("Error:")
+                ? "contact-status contact-status-error"
+                : "contact-status contact-status-success"
+            }
+            role="status"
+          >
+            {status}
+          </p>
+        )}
+        </form>
+      </div>
     </section>
   );
 }
